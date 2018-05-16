@@ -5,7 +5,7 @@
 #include <SPI.h>
 
 
-class encoders {
+class Encoders {
 public:
     long counts[3];
     Encoders();

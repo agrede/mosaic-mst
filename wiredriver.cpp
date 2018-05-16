@@ -1,8 +1,8 @@
 #include "wiredriver.h"
 
-class wiredriver{
+class WireDriver{
 public:
-    wiredriver(encoders *ec; CmdMessenger *cmg, byte lCmd; double (*targ)[3], double Kp[3], double Ki[3], double Kd[3]) {
+    WireDriver(encoders *ec; CmdMessenger *cmg, byte lCmd; long (*targ)[3], double Kp[3], double Ki[3], double Kd[3]) {
         enc = ec;
         cmdMsg = cmg;
         logCmd = lCmd;
@@ -74,5 +74,11 @@ public:
             }
         }
         return true;
+    }
+    void startDriver() {
+        enable = true;
+    }
+    void stopDriver() {
+        enable = false;
     }
 }

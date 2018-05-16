@@ -16,9 +16,9 @@ float sin_heading, sin_tilt, sin_azimuth, sin_zenith;
 float cos_heading, cos_tilt, cos_azimuth, cos_zenith;
 
 void calculateSpot();
-void initializeSpot(float heading, float tilt, float latitude,
-                    float longitude, int year, int month, int day, float hour);
-void updateSpotPrediction(int year, int month, int day, float hour);
+void initializeSpot(float heading, float tilt, double latitude,
+                    double longitude, int year, int month, int day, double hour);
+void updateSpotPrediction(int year, int month, int day, double hour);
 void updatePannel(float heading, float tilt);
 
 #endif

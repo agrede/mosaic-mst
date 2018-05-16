@@ -8,7 +8,7 @@ float spot_coefficients[2] = {1.4931946984090267, 5.590295459232854};
 sunpos sun_pos;
 
 void initializeSpot(float heading, float tilt, float latitude,
-                    float longitude, int year, int month, int day, float hour) {
+                    float longitude, int year, int month, int day, double hour) {
     sun_pos.Year = year;
     sun_pos.Month = month;
     sun_pos.Day = day;
@@ -48,7 +48,7 @@ void calculateSpot() {
                         +spot_coefficients[1])*y;
 }
 
-void updateSpotPredictions(int year, int month, int day, float hour) {
+void updateSpotPredictions(int year, int month, int day, double hour) {
     // Set current time
     sun_pos.Year = year;
     sun_pos.Month = month;
@@ -59,10 +59,10 @@ void updateSpotPredictions(int year, int month, int day, float hour) {
     sun_pos.Algorithm2('l');    // Fastest with sufficient accuracy
 
     // Update sin and cosines
-    sin_azimuth = sin(sun_pos.Azimuth);
-    sin_zenith = sin(sun_pos.Zenith);
-    cos_azimuth = cos(sun_pos.Azimuth);
-    cos_zenith = cos(sun_pos.Zenith);
+    sin_azimuth = sin(float(sun_pos.Azimuth));
+    sin_zenith = sin(float(sun_pos.Zenith));
+    cos_azimuth = cos(float(sun_pos.Azimuth));
+    cos_zenith = cos(float(sun_pos.Zenith));
     spot_last_position[0] = spot_position[0];
     spot_last_position[1] = spot_position[1];
 

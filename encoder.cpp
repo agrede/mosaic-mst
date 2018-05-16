@@ -3,6 +3,8 @@
 
 class Encoders {
 public:
+    enabled = true;
+
     Encoders() {
         for (int i=0; i<3; i++) {
             pinMode(select[i], OUTPUT);
@@ -27,6 +29,7 @@ public:
         SPI.endTransaction();
     }
     void start() {
+        enabled = true;
         SPI.beginTransaction(SPISET);
         for (int i=0; i<3; i++) {
             digitalWrite(select[i], LOW);
@@ -37,6 +40,7 @@ public:
         SPI.endTransaction();
     }
     void stop() {
+        enabled = false;
         SPI.beginTransaction(SPISET);
         for (int i=0; i<3; i++) {
             digitalWrite(select[i], LOW);
@@ -71,5 +75,9 @@ public:
             digitalWrite(select[i], HIGH);
         }
         SPI.endTransaction();
+    }
+    void center() {
+        clear();
+        stop();
     }
 }

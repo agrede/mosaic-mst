@@ -6,7 +6,7 @@
 #include "PID_v1.h"
 #include <CmdMessenger.h>
 
-class wiredriver{
+class WireDriver{
 public:
     encoders *enc;
     bool enable = false;
@@ -16,9 +16,11 @@ public:
     double stability_threshold = 2;
     byte stability_count_threshold = 10;
     bool logging = false;
-    wiredriver(CmdMessenger *cmg; double (*targ)[3], double Kp[3], double Ki[3], double Kd[3]);
+    WireDriver(CmdMessenger *cmg; long (*targ)[3], double Kp[3], double Ki[3], double Kd[3]);
     void loop();
     bool stable();
+    void startDriver();
+    void stopDriver();
 private:
     const int[3] pins = {3, 5, 10};
     const bool INVERT = false;
