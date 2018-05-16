@@ -8,14 +8,16 @@
 class Encoders {
 public:
     long counts[3];
-    Encoders();
+    bool enabled = true;
+    void begin();
     void start();
     void stop();
     void clear();
     void read();
+    void center();
 private:
     const int select[3] = {8, 4, 7};
-    const SPISettings SPISET = new SPISettings(5000000, MSBFIRST, SPI_MODE0);
-}
+    const SPISettings SPISET = SPISettings(5000000, MSBFIRST, SPI_MODE0);
+};
 
 #endif

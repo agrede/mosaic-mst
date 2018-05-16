@@ -1,20 +1,20 @@
-#include "Arduino.h"
-#include <movement.h>
-#include <math.h>
+#include "movement.h"
 
-float pos_vector[3] = {0.0, 0.0, 0.0};
+double pos_vector[3] = {0.0, 0.0, 0.0};
+long L_target[3];
+long L_0[3];
 
-void setTarget(float pos[3]) {
+void setTarget(double pos[3]) {
     for (int i=0; i<3; i++) {
         pos_vector[i] = constrain(pos[i], -pos_limits[i], pos_limits[i]);
     }
     for (int i=0; i<3; i++) {
         L_target[i] = long(
             wire_resolution*sqrt(
-                sq(xframe[i]+pos_vector[2]*ysheet[i]
-                    -xsheet[i]-pos_vector[0])
-                +sq(yframe[i]+pos_vector[2]*xsheet[i]
-                     -ysheet[i]-pos_vector[1]))) - L_0[i];
+                sq(x_frame[i]+pos_vector[2]*y_sheet[i]
+                    -x_sheet[i]-pos_vector[0])
+                +sq(y_frame[i]+pos_vector[2]*x_sheet[i]
+                     -y_sheet[i]-pos_vector[1]))) - L_0[i];
     }
 }
 
@@ -22,6 +22,6 @@ void setL0() {
     for (int i=0; i<3; i++) {
         L_0[i] = long(
             wire_resolution*sqrt(
-                sq(xframe[i]-xsheet[i])+sq(yframe[i]-ysheet[i])));
+                sq(x_frame[i]-x_sheet[i])+sq(y_frame[i]-y_sheet[i])));
     }
 }

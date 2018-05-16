@@ -23,26 +23,33 @@ enum {
 SoftwareSerial errSerial(9, 2); //rx, tx
 CmdMessenger errMsg = CmdMessenger(errSerial);
 
-ErrorCells errCells;
+double ki[3] = {0.48, 0.375, 0.375};
+double kp[3] = {1.0, 0.75, 0.75};
+double kd[3] = {0.04, 0.04, 0.04};
+
+ErrorCells errCells = ErrorCells(&errMsg, &pos_vector);
 Encoders encoders;
-WireDriver wireDriver;
+WireDriver wireDriver = WireDriver(&encoders, &usrMsg, &L_target, kRecievePIDLogging, ki, kp, kd);
 RTC_DS1307 rtc;
 DateTime now;
 
 
 void userSetTarget() {
-    float newPos[3];
+    double newPos[3];
     for (int i=0;i<3;i++) {
-        newPos[i] = usrMsg.readFloatArg();
+        newPos[i] = usrMsg.readDoubleArg();
     }
     setTarget(newPos);
 }
+void startDriver() {wireDriver.startDriver();}
+void stopDriver() {wireDriver.stopDriver();}
+void startError() {errCells.start();}
+void stopError() {errCells.stop();}
+void encCenter() {encoders.center();}
 
 void setup() {
     Serial.begin(115200);
     errSerial.begin(115200);
-    errCells = ErrorCells(&errMsg, &offsets);
-    encoders = Encoders();
     rtc.begin();
     now = rtc.now();
     initializeSpot(0.0, 0.0, 40.7946, -77.8647,
@@ -50,26 +57,22 @@ void setup() {
                    double(now.hour())+double(now.minute())/60.0
                    +double(now.second())/3600.0);
     setL0();
-    setTarget({0.0, 0.0, 0.0});
-    wireDriver = WireDriver(
-        &encoders, &usrMsg, kRecievePIDLogging, &L_target,
-        {0.48, 0.375, 0.375}, {1.0, 0.75, 0.75}, {0.04, 0.04, 0.04});
-    usrMsg.attach(kStartPID, wireDriver.start);
-    usrMsg.attach(kStopPID, wireDriver.stop);
-    usrMsg.attach(kStartError, errorCells.start);
-    usrMsg.attach(kStopError, errorCells.stop);
-    usrMsg.attach(kSheetCenter, encoders.center);
+    usrMsg.attach(kStartPID, startDriver);
+    usrMsg.attach(kStopPID, stopDriver);
+    usrMsg.attach(kStartError, startError);
+    usrMsg.attach(kStopError, stopError);
+    usrMsg.attach(kSheetCenter, encCenter);
     usrMsg.attach(kSetTarget, userSetTarget);
 }
 
 void loop() {
     usrMsg.feedinSerialData();
-    errSerial.feedinSerialData();
+    errMsg.feedinSerialData();
     if (encoders.enabled) {
         encoders.read();
     }
     if (wireDriver.stable()) {
-        errorCells.loop();
+        errCells.loop();
     }
     wireDriver.loop();
 }

@@ -1,14 +1,19 @@
-#include <spotposition.h>
-#include <math.h>
-#include "Sun_position_algorithms.h"
+#include "spotposition.h"
 
-
-float pannel_angles[2] = {0.0, 0.7155849933176751};
-float spot_coefficients[2] = {1.4931946984090267, 5.590295459232854};
 sunpos sun_pos;
+/* Panel movement */
+double panel_angles[2]; /* heading WoS, tilt in rad*/
 
-void initializeSpot(float heading, float tilt, float latitude,
-                    float longitude, int year, int month, int day, double hour) {
+/* Predictive */
+double spot_position[2];         /* x and y in mm */
+double spot_last_position[2];    /* x and y in mm */
+
+/* Aux variables */
+double sin_heading, sin_tilt, sin_azimuth, sin_zenith;
+double cos_heading, cos_tilt, cos_azimuth, cos_zenith;
+
+void initializeSpot(double heading, double tilt, double latitude,
+                    double longitude, int year, int month, int day, double hour) {
     sun_pos.Year = year;
     sun_pos.Month = month;
     sun_pos.Day = day;
@@ -19,24 +24,25 @@ void initializeSpot(float heading, float tilt, float latitude,
     updatePannel(heading, latitude);
 }
 
-void updatePannel(float heading, float tilt) {
-    pannel_angles = {rad*heading, rad*tilt};
-    sin_heading = sin(pannel_angles[0]);
-    cos_heading = cos(pannel_angles[0]);
-    sin_tilt = sin(pannel_angles[1]);
-    cos_tilt = cos(pannel_angles[1]);
+void updatePannel(double heading, double tilt) {
+    panel_angles[0] = rad*heading;
+    panel_angles[1], rad*tilt;
+    sin_heading = sin(panel_angles[0]);
+    cos_heading = cos(panel_angles[0]);
+    sin_tilt = sin(panel_angles[1]);
+    cos_tilt = cos(panel_angles[1]);
 }
 
 void calculateSpot() {
     // Unit vector components pointing to sun in panel coordinates
-    float x = (cos_azimuth*sin_zenith*sin_heading
+    double x = (cos_azimuth*sin_zenith*sin_heading
                -sin_azimuth*sin_zenith*cos_heading);
-    float y = (cos_zenith*sin_tilt
+    double y = (cos_zenith*sin_tilt
                -sin_azimuth*sin_zenith*cos_tilt*sin_heading
                -cos_azimuth*sin_zenith*cos_tilt*sin_heading);
     // Sin of angle between sun and panel normal
-    float r = sqrt(
-        1-sq(cos_zenith*sin_tilt
+    double r = sqrt(
+        1.0-sq(cos_zenith*sin_tilt
              +sin_azimuth*sin_zenith*cos_tilt*sin_heading
              +cos_azimuth*sin_zenith*cos_tilt*sin_heading));
 
@@ -59,10 +65,10 @@ void updateSpotPredictions(int year, int month, int day, double hour) {
     sun_pos.Algorithm2('l');    // Fastest with sufficient accuracy
 
     // Update sin and cosines
-    sin_azimuth = sin(float(sun_pos.Azimuth));
-    sin_zenith = sin(float(sun_pos.Zenith));
-    cos_azimuth = cos(float(sun_pos.Azimuth));
-    cos_zenith = cos(float(sun_pos.Zenith));
+    sin_azimuth = sin(double(sun_pos.Azimuth));
+    sin_zenith = sin(double(sun_pos.Zenith));
+    cos_azimuth = cos(double(sun_pos.Azimuth));
+    cos_zenith = cos(double(sun_pos.Zenith));
     spot_last_position[0] = spot_position[0];
     spot_last_position[1] = spot_position[1];
 

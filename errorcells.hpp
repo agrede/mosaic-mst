@@ -6,14 +6,18 @@
 
 class ErrorCells{
 public:
-    ErrorCells(CmdMessenger *cmsg, float (*offst)[3]);
+    float scale = 0.2;
+    bool enabled = false;
+    ErrorCells(CmdMessenger *cmsg, double (*offst)[3]);
     void loop();
     void updateOffsets();
+    void start();
+    void stop();
 private:
     bool recieved;
     CmdMessenger *cmdMsg;
-    float (*offsets)[3];
+    double (*offsets)[3];
     byte requestCmd;
-}
+};
 
 #endif

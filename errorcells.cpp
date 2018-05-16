@@ -1,30 +1,26 @@
 #include "errorcells.hpp"
 
-class ErrorCells{
-public:
-    float scale = 0.2;
-    float enabled = false;
-    ErrorCells(CmdMessenger *cmsg, float (*offst)[3]) {
-        cmdMsg = cmsg;
-        offsets = offst;
-        recieved = true;
+
+ErrorCells::ErrorCells(CmdMessenger *cmsg, double (*offst)[3]) {
+    cmdMsg = cmsg;
+    offsets = offst;
+    recieved = true;
+}
+void ErrorCells::loop(){
+    if (recieved && enabled) {
+        recieved = false;
+        cmdMsg->sendCmd(requestCmd);
     }
-    void loop(){
-        if (recieved && enabled) {
-            recieved = false;
-            *cmdMsg.sendCmd(requestCmd);
-        }
+}
+void ErrorCells::updateOffsets() {
+    for (int i=0;i<3;i++) {
+        *offsets[i] += scale*(cmdMsg->readDoubleArg());
     }
-    void updateOffsets() {
-        for (int i=0;i<3;i++) {
-            *offsets[i] += scale*(*cmdMsg.readFloatArg());
-        }
-        recieved = true
-    }
-    void start(){
-        enabled = true;
-    }
-    void stop(){
-        enabled = false;
-    }
+    recieved = true;
+}
+void ErrorCells::start(){
+    enabled = true;
+}
+void ErrorCells::stop(){
+    enabled = false;
 }

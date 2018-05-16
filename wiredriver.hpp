@@ -8,21 +8,22 @@
 
 class WireDriver{
 public:
-    encoders *enc;
+    Encoders *enc;
     bool enable = false;
-    PID pids[3];
+    PID *pids[3];
     double min = 0.0;
     double max = 229.5;
     double stability_threshold = 2;
     byte stability_count_threshold = 10;
     bool logging = false;
-    WireDriver(CmdMessenger *cmg; long (*targ)[3], double Kp[3], double Ki[3], double Kd[3]);
+    WireDriver(Encoders *ec, CmdMessenger *cmg, long (*targ)[3], byte lCmd, double Kp[3], double Ki[3], double Kd[3]);
     void loop();
+    void begin();
     bool stable();
     void startDriver();
     void stopDriver();
 private:
-    const int[3] pins = {3, 5, 10};
+    const int pins[3] = {3, 5, 10};
     const bool INVERT = false;
     CmdMessenger *cmdMsg;
     byte logCmd;
@@ -31,6 +32,6 @@ private:
     byte stability_count[3];
     double output[3];
     long (*target)[3];
-}
+};
 
 #endif
