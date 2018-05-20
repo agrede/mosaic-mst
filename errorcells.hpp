@@ -1,14 +1,14 @@
 #ifndef ERRORCELLS_HPP
 #define ERRORCELLS_HPP
-
 #include "Arduino.h"
 #include <CmdMessenger.h>
+#include "movement.h"
 
 class ErrorCells{
 public:
     float scale = 0.2;
     bool enabled = false;
-    ErrorCells(CmdMessenger *cmsg, double (*offst)[3]);
+    ErrorCells(CmdMessenger *cmsg, double (*offst)[3], byte rqstCmd);
     void loop();
     void updateOffsets();
     void start();

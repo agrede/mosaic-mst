@@ -1,5 +1,7 @@
 #include "encoder.h"
 
+Encoders::Encoders() { }
+
 void Encoders::begin() {
     for (int i=0; i<3; i++) {
         pinMode(select[i], OUTPUT);

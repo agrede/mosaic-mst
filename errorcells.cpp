@@ -1,10 +1,11 @@
 #include "errorcells.hpp"
 
 
-ErrorCells::ErrorCells(CmdMessenger *cmsg, double (*offst)[3]) {
+ErrorCells::ErrorCells(CmdMessenger *cmsg, double (*offst)[3], byte rqstCmd) {
     cmdMsg = cmsg;
     offsets = offst;
     recieved = true;
+    requestCmd = rqstCmd;
 }
 void ErrorCells::loop(){
     if (recieved && enabled) {
@@ -14,13 +15,8 @@ void ErrorCells::loop(){
 }
 void ErrorCells::updateOffsets() {
     for (int i=0;i<3;i++) {
-        *offsets[i] += scale*(cmdMsg->readDoubleArg());
+        *offsets[i] += scale*(cmdMsg->readBinArg<double>());
     }
+    setTarget();
     recieved = true;
-}
-void ErrorCells::start(){
-    enabled = true;
-}
-void ErrorCells::stop(){
-    enabled = false;
 }

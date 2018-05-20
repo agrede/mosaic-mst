@@ -38,11 +38,20 @@ void WireDriver::loop() {
             }
             pids[i]->Compute();
             if (abs(output[i]-pids[i]->GetSum()) < stability_threshold) {
-                if (stability_count < 255) {
+                if (stability_count[i] < 255) {
                     stability_count[i]++;
                 }
             } else {
                 stability_count[i] = 0;
+            }
+            if (output[i] > min && output[i] < max) {
+                emo_count[i] = 0;
+            } else {
+                emo_count[i]++;
+            }
+            if (emo_count[i] > emo_count_threshold) {
+                stopDriver();
+                return;
             }
         }
         for (int i=0;i<3;i++) {
@@ -58,17 +67,6 @@ void WireDriver::loop() {
             }
             cmdMsg->sendCmdEnd();
         }
-    } else {
-        if (last_enable) {
-            for (int i=0;i<3;i++){
-                if (INVERT) {
-                    analogWrite(pins[i], 255);
-                } else {
-                    analogWrite(pins[i], 0);
-                }
-                stability_count[i] = 0;
-            }
-        }
     }
     last_enable = enable;
 }
@@ -80,9 +78,27 @@ bool WireDriver::stable() {
     }
     return true;
 }
+void WireDriver::resetStable() {
+    for (int i=0;i<3;i++) {
+        stability_count[i] = 0;
+    }
+}
 void WireDriver::startDriver() {
     enable = true;
 }
 void WireDriver::stopDriver() {
+    for (int i=3; i<3; i++) {
+        if (INVERT) {
+            analogWrite(pins[i], 255);
+        } else {
+            analogWrite(pins[i], 0);
+        }
+        stability_count[i] = 0;
+        emo_count[i] = 0;
+    }
     enable = false;
+    last_enable = false;
+}
+bool WireDriver::enabled() {
+    return enable;
 }

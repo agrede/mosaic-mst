@@ -9,6 +9,7 @@ class Encoders {
 public:
     long counts[3];
     bool enabled = true;
+    Encoders();
     void begin();
     void start();
     void stop();

@@ -77,7 +77,7 @@ The following code performs the computation of the position at every hour (from 
 // AR: Arduino library does not support cmath.h library
 #ifndef SUNPOS_H
 #define SUNPOS_H
-#include <math.h>
+#include "Arduino.h"
 
 #ifndef PI
 #define PI 3.14159265358979

@@ -11,6 +11,7 @@ double spot_last_position[2];    /* x and y in mm */
 /* Aux variables */
 double sin_heading, sin_tilt, sin_azimuth, sin_zenith;
 double cos_heading, cos_tilt, cos_azimuth, cos_zenith;
+bool feed_forward = false;
 
 void initializeSpot(double heading, double tilt, double latitude,
                     double longitude, int year, int month, int day, double hour) {
@@ -21,12 +22,12 @@ void initializeSpot(double heading, double tilt, double latitude,
     sun_pos.Dt = 68.9677;       // As of 2018
     sun_pos.Longitude = rad*longitude;
     sun_pos.Latitude = rad*latitude;
-    updatePannel(heading, latitude);
+    updatePanel(heading, latitude);
 }
 
-void updatePannel(double heading, double tilt) {
+void updatePanel(double heading, double tilt) {
     panel_angles[0] = rad*heading;
-    panel_angles[1], rad*tilt;
+    panel_angles[1] =  rad*tilt;
     sin_heading = sin(panel_angles[0]);
     cos_heading = cos(panel_angles[0]);
     sin_tilt = sin(panel_angles[1]);

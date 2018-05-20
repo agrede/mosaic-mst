@@ -2,7 +2,6 @@
 #define SPOTPOSITION_H
 
 #include "Arduino.h"
-#include <math.h>
 #include "Sun_position_algorithms.h"
 
 extern sunpos sun_pos;
@@ -20,11 +19,12 @@ extern double spot_last_position[2];    /* x and y in mm */
 /* Aux variables */
 extern double sin_heading, sin_tilt, sin_azimuth, sin_zenith;
 extern double cos_heading, cos_tilt, cos_azimuth, cos_zenith;
+extern bool feed_forward;
 
 void calculateSpot();
 void initializeSpot(double heading, double tilt, double latitude,
                     double longitude, int year, int month, int day, double hour);
 void updateSpotPrediction(int year, int month, int day, double hour);
-void updatePannel(double heading, double tilt);
+void updatePanel(double heading, double tilt);
 
 #endif
