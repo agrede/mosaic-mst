@@ -149,18 +149,38 @@ void getRTC() {
     usrMsg.sendBinCmd<uint32_t>(kGetRTC, now.unixtime());
 }
 
+void unknownCommand(){
+    Serial.println("Unknown!");
+}
+
+void unknownCommandErr(){
+    Serial1.println("Unknown!");
+}
+
 void recieveError() { errCells.updateOffsets(); }
 
 void setup() {
     Serial.begin(115200);
     Serial1.begin(115200);
-    rtc.begin();
+    if (! rtc.begin()) {
+        Serial.println("No RTC");
+        while (1);
+    } else {
+        Serial.println("RTC Enabled");
+    }
+    // encoders.begin();
+    Serial.println("Encoders Started");
+    wireDriver.begin();
+    Serial.println("Wiredriver Started");
     now = rtc.now();
     initializeSpot(0.0, 0.0, 40.7946, -77.8647,
                    now.year(), now.month(), now.day(),
                    double(now.hour())+double(now.minute())/60.0
                    +double(now.second())/3600.0);
+    Serial.println("Spot init");
     setL0();
+    Serial.println("Set L0");
+    usrMsg.attach(unknownCommand);
     usrMsg.attach(kGetPIDEnabled, getPIDEnabled);
     usrMsg.attach(kSetPIDEnabled, setPIDEnabled);
     usrMsg.attach(kGetPIDLoggingEnabled, getPIDLoggingEnabled);
@@ -184,16 +204,23 @@ void setup() {
     usrMsg.attach(kGetGlobalPosition, getGlobalPosition);
     usrMsg.attach(kSetPanelOrientation, setPanelOrientation);
     usrMsg.attach(kGetPanelOrientation, getPanelOrientation);
+    usrMsg.attach(kGetRTC, getRTC);
+    usrMsg.attach(kSetRTC, setRTC);
+    errMsg.attach(unknownCommandErr);
+    errMsg.attach(kRecieveError, recieveError);
+    Serial.println("Attached callbacks");
 }
 
 void loop() {
     usrMsg.feedinSerialData();
     errMsg.feedinSerialData();
-    if (encoders.enabled) {
-        encoders.read();
+    if (wireDriver.enabled()) {
+        if (encoders.enabled) {
+            encoders.read();
+        }
+        if (wireDriver.stable()) {
+            errCells.loop();
+        }
+        wireDriver.loop();
     }
-    if (wireDriver.stable()) {
-        errCells.loop();
-    }
-    wireDriver.loop();
 }
