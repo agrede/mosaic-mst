@@ -11,6 +11,8 @@
 CmdMessenger usrMsg = CmdMessenger(Serial);
 enum {
     kRecievePIDLogging,
+    kGetEncoderEnabled,
+    kSetEncoderEnabled,
     kGetPIDEnabled,
     kSetPIDEnabled,
     kGetPIDLoggingEnabled,
@@ -36,6 +38,9 @@ enum {
     kGetPanelOrientation,
     kSetRTC,
     kGetRTC,
+    kGetEncoderCounts,
+    kGetEncoderStats,
+    kGetPIDCoeff,
 };
 enum {
     kRequestError,
@@ -66,16 +71,57 @@ void setPIDEnabled() {
         wireDriver.stopDriver();
     }
 }
+void getEncoderEnabled() {
+    usrMsg.sendBinCmd<bool>(kGetEncoderEnabled, encoders.enabled); }
+void setEncoderEnabled() {
+    if (usrMsg.readBinArg<bool>()) {
+        encoders.start();
+    } else {
+        encoders.stop();
+    }
+}
+void getEncoderCounts() {
+    if (encoders.enabled) {
+        encoders.read();
+        usrMsg.sendCmdStart(kGetEncoderCounts);
+        for (int i=0;i<3;i++) {
+            usrMsg.sendCmdBinArg<double>(encoders.counts[i]);
+        }
+        usrMsg.sendCmdEnd();
+    } else {
+        usrMsg.sendCmdStart(kGetEncoderCounts);
+        for (int i=0;i<3;i++) {
+            usrMsg.sendCmdBinArg<double>(-555.0);
+        }
+        usrMsg.sendCmdEnd();
+    }
+}
+void getEncoderStats() {
+    encoders.status();
+    usrMsg.sendCmdStart(kGetEncoderStats);
+    for (int i=0;i<3;i++) {
+        usrMsg.sendCmdBinArg<byte>(encoders.stats[i]);
+    }
+    usrMsg.sendCmdEnd();
+}
 void getPIDLoggingEnabled() {
     usrMsg.sendBinCmd<bool>(kGetPIDLoggingEnabled, wireDriver.logging);
 }
-
 void setPIDLoggingEnabled() { wireDriver.logging = usrMsg.readBinArg<bool>(); }
+void getPIDCoeff() {
+    usrMsg.sendCmdStart(kGetPIDCoeff);
+    for (int i=0;i<3;i++) {
+        usrMsg.sendCmdBinArg<double>(wireDriver.pids[i]->GetKp());
+        usrMsg.sendCmdBinArg<double>(wireDriver.pids[i]->GetKi());
+        usrMsg.sendCmdBinArg<double>(wireDriver.pids[i]->GetKd());
+    }
+    usrMsg.sendCmdEnd();
+}
 void getErrorCellEnabled() {
     usrMsg.sendBinCmd<bool>(kGetErrorCellEnabled, errCells.enabled);
 }
 void setErrorCellEnabled() { errCells.enabled = usrMsg.readBinArg<bool>(); }
-void sheetCenter() { encoders.center(); }
+void sheetCenter() { encoders.clear(); }
 void userSetTarget() {
     for (int i=0;i<3;i++) {
         pos_vector[i] = usrMsg.readBinArg<double>();
@@ -168,7 +214,8 @@ void setup() {
     } else {
         Serial.println("RTC Enabled");
     }
-    // encoders.begin();
+    SPI.begin();
+    encoders.begin();
     Serial.println("Encoders Started");
     wireDriver.begin();
     Serial.println("Wiredriver Started");
@@ -183,6 +230,8 @@ void setup() {
     usrMsg.attach(unknownCommand);
     usrMsg.attach(kGetPIDEnabled, getPIDEnabled);
     usrMsg.attach(kSetPIDEnabled, setPIDEnabled);
+    usrMsg.attach(kGetEncoderEnabled, getEncoderEnabled);
+    usrMsg.attach(kSetEncoderEnabled, setEncoderEnabled);
     usrMsg.attach(kGetPIDLoggingEnabled, getPIDLoggingEnabled);
     usrMsg.attach(kSetPIDLoggingEnabled, setPIDLoggingEnabled);
     usrMsg.attach(kGetErrorCellEnabled, getErrorCellEnabled);
@@ -208,6 +257,9 @@ void setup() {
     usrMsg.attach(kSetRTC, setRTC);
     errMsg.attach(unknownCommandErr);
     errMsg.attach(kRecieveError, recieveError);
+    usrMsg.attach(kGetEncoderCounts, getEncoderCounts);
+    usrMsg.attach(kGetEncoderStats, getEncoderStats);
+    usrMsg.attach(kGetPIDCoeff, getPIDCoeff);
     Serial.println("Attached callbacks");
 }
 
@@ -223,4 +275,5 @@ void loop() {
         }
         wireDriver.loop();
     }
+    delayMicroseconds(100); // Ensure new command
 }

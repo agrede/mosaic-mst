@@ -14,8 +14,8 @@ const double pos_limits[3] = {7.0, 7.0, 0.08726646259971647};
 extern double pos_vector[3];
 extern bool pos_updated;
 
-extern long L_target[3];
-extern long L_0[3];
+extern double L_target[3];
+extern double L_0[3];
 
 void setTarget();
 void setL0();

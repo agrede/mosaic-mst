@@ -13,14 +13,18 @@ void Encoders::begin() {
         SPI.transfer(0x88); // Write to MDR0
         SPI.transfer(0x03); // Configure x4 quadrature count
         digitalWrite(select[i], HIGH);
-        delayMicroseconds(1); // Ensure new command
+        delayMicroseconds(100); // Ensure new command
         digitalWrite(select[i], LOW);
         SPI.transfer(0x90); // Write to MDR1
         SPI.transfer(0x04); // Disable Counting
         digitalWrite(select[i], HIGH);
-        delayMicroseconds(1); // Ensure new command
+        delayMicroseconds(100); // Ensure new command
         digitalWrite(select[i], LOW);
         SPI.transfer(0x20); // Clear Counter
+        digitalWrite(select[i], HIGH);
+        delayMicroseconds(100); // Ensure new command
+        digitalWrite(select[i], LOW);
+        SPI.transfer(0x30); // Clear STR
         digitalWrite(select[i], HIGH);
     }
     SPI.endTransaction();
@@ -59,21 +63,27 @@ void Encoders::clear() {
 void Encoders::read() {
     SPI.beginTransaction(SPISET);
     for (int i=0; i<3; i++) {
-        counts[i] = 0;
+        long cnt = 0;
         digitalWrite(select[i], LOW);
-        SPI.transfer(0xE4); // Load CNTR to OTR
-        digitalWrite(select[i], HIGH);
-        delayMicroseconds(1); // Ensure new command
-        digitalWrite(select[i], LOW);
-        SPI.transfer(0x68); // read from OTR
+        SPI.transfer(0x60); // read from CNTR
         for (int j=0; j<4; j++) {
-            counts[i] |= (SPI.transfer(0x00) << (3-j)*8);
+            cnt |= (SPI.transfer(0x00) << (3-j)*8);
         }
         digitalWrite(select[i], HIGH);
+        counts[i] = double(cnt);
     }
     SPI.endTransaction();
 }
-void Encoders::center() {
-    clear();
-    stop();
+void Encoders::status() {
+    SPI.beginTransaction(SPISET);
+    for (int i=0; i<3; i++) {
+        digitalWrite(select[i], LOW);
+        stats[i] = SPI.transfer(0x70); // read from STR
+        digitalWrite(select[i], HIGH);
+        delayMicroseconds(100); // Ensure new command
+        digitalWrite(select[i], LOW);
+        stats[i] = SPI.transfer(0x30); // clear STR
+        digitalWrite(select[i], HIGH);
+    }
+    SPI.endTransaction();
 }

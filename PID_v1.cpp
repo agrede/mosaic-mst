@@ -17,7 +17,7 @@
  *    The parameters specified here are those for for which we can't set up
  *    reliable defaults, so we need to have the user set them.
  ***************************************************************************/
-PID::PID(long* Input, double* Output, long* Setpoint,
+PID::PID(double* Input, double* Output, double* Setpoint,
         double Kp, double Ki, double Kd, int POn, int ControllerDirection)
 {
     myOutput = Output;
@@ -41,7 +41,7 @@ PID::PID(long* Input, double* Output, long* Setpoint,
  *    to use Proportional on Error without explicitly saying so
  ***************************************************************************/
 
-PID::PID(long* Input, double* Output, long* Setpoint,
+PID::PID(double* Input, double* Output, double* Setpoint,
         double Kp, double Ki, double Kd, int ControllerDirection)
     :PID::PID(Input, Output, Setpoint, Kp, Ki, Kd, P_ON_E, ControllerDirection)
 {
@@ -63,7 +63,7 @@ bool PID::Compute()
     if(timeChange>=SampleTime)
     {
         /*Compute all the working error variables*/
-        double input = double(*myInput);
+        double input = *myInput;
         double error = *mySetpoint - input;
         double dInput = (input - lastInput);
         outputSum+= (ki * error);
@@ -108,7 +108,7 @@ void PID::SetTunings(double Kp, double Ki, double Kd, int POn)
 
     dispKp = Kp; dispKi = Ki; dispKd = Kd;
 
-    double SampleTimeInSec = ((double)SampleTime)/1000;
+    double SampleTimeInSec = ((double)SampleTime)/1000.0;
     kp = Kp;
     ki = Ki * SampleTimeInSec;
     kd = Kd / SampleTimeInSec;
@@ -189,7 +189,7 @@ void PID::SetMode(int Mode)
 void PID::Initialize()
 {
     outputSum = *myOutput;
-    lastInput = double(*myInput);
+    lastInput = *myInput;
     if(outputSum > outMax) outputSum = outMax;
     else if(outputSum < outMin) outputSum = outMin;
 }
