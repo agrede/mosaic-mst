@@ -46,7 +46,7 @@ public:
     //   means the output will increase when error is positive. REVERSE
     //   means the opposite.  it's very unlikely that this will be needed
     //   once it is set in the constructor.
-    void SetSampleTime(int);              // * sets the frequency, in Milliseconds, with which
+    void SetSampleTime(unsigned long);              // * sets the frequency, in Milliseconds, with which
                                           //   the PID calculation is performed.  default is 100
 
 

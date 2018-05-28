@@ -1,7 +1,8 @@
-#ifndef MOVEMENT_H
-#define MOVEMENT_H
+#ifndef MOVEMENT_HPP
+#define MOVEMENT_HPP
 
 #include "Arduino.h"
+#include "coms.hpp"
 
 const double wire_resolution = 2371.76;   /* (count or step)/mm */
 /* Frame pivot points in mm */
@@ -20,5 +21,9 @@ extern double L_0[3];
 void setTarget();
 void setL0();
 
+void userSetTarget();
+void userGetTarget();
+
+void movementSetup();
 
 #endif

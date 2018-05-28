@@ -1,22 +1,39 @@
 #include "errorcells.hpp"
 
 
-ErrorCells::ErrorCells(CmdMessenger *cmsg, double (*offst)[3], byte rqstCmd) {
-    cmdMsg = cmsg;
-    offsets = offst;
-    recieved = true;
-    requestCmd = rqstCmd;
+double error_scale = 0.2;
+bool error_enabled = false;
+bool error_recieved = false;
+
+void errorSetup() {
+    errMsg.attach(kRecieveError, recieveError);
+    usrMsg.attach(kSetErrorCell, setErrorCell);
+    usrMsg.attach(kGetErrorCell, getErrorCell);
+    usrMsg.attach(kSetErrorScale, setErrorScale);
+    usrMsg.attach(kGetErrorScale, getErrorScale);
 }
-void ErrorCells::loop(){
-    if (recieved && enabled) {
-        recieved = false;
-        cmdMsg->sendCmd(requestCmd);
+void errorLoop() {
+    if (error_enabled && error_recieved) {
+        error_recieved = false;
+        errMsg.sendCmd(kRequestError);
     }
 }
-void ErrorCells::updateOffsets() {
-    for (int i=0;i<3;i++) {
-        *offsets[i] += scale*(cmdMsg->readBinArg<double>());
+
+void recieveError() {
+    for (int i=0; i<3; i++) {
+        pos_vector[i] += error_scale*errMsg.readBinArg<double>();
     }
     setTarget();
-    recieved = true;
+    error_recieved = true;
+}
+
+void getErrorCell() {
+    usrMsg.sendBinCmd<bool>(kGetErrorCell, error_enabled);
+}
+void setErrorCell() { error_enabled = usrMsg.readBinArg<bool>(); }
+void setErrorScale() {
+    error_scale = usrMsg.readBinArg<double>();
+}
+void getErrorScale() {
+    usrMsg.sendBinCmd<double>(kGetErrorScale, error_scale);
 }

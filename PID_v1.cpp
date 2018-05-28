@@ -131,16 +131,13 @@ void PID::SetTunings(double Kp, double Ki, double Kd){
 /* SetSampleTime(...) *********************************************************
  * sets the period, in Milliseconds, at which the calculation is performed
  ******************************************************************************/
-void PID::SetSampleTime(int NewSampleTime)
+void PID::SetSampleTime(unsigned long NewSampleTime)
 {
-    if (NewSampleTime > 0)
-    {
-        double ratio  = (double)NewSampleTime
-            / (double)SampleTime;
-        ki *= ratio;
-        kd /= ratio;
-        SampleTime = (unsigned long)NewSampleTime;
-    }
+    double ratio  = (double)NewSampleTime
+        / (double)SampleTime;
+    ki *= ratio;
+    kd /= ratio;
+    SampleTime = NewSampleTime;
 }
 
 /* SetOutputLimits(...)****************************************************

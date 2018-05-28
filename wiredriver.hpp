@@ -2,42 +2,43 @@
 #define WIREDRIVER_HPP
 
 #include "Arduino.h"
-#include "encoder.h"
+#include "coms.hpp"
+#include "encoder.hpp"
+#include "movement.hpp"
 #include "PID_v1.h"
-#include <CmdMessenger.h>
 
-class WireDriver{
-public:
-    Encoders *enc;
-    PID *pids[3];
-    double min = 0.0;
-    double max = 229.5;
-    double stability_threshold = 2.0;
-    byte stability_count_threshold = 20;
-    byte emo_count_threshold = 250;
-    bool logging = false;
-    WireDriver(Encoders *ec, CmdMessenger *cmg, double (*targ)[3], byte lCmd, double Kp[3], double Ki[3], double Kd[3]);
-    void loop();
-    void begin();
-    bool stable();
-    void resetStable();
-    void startDriver();
-    void stopDriver();
-    bool enabled();
-private:
-    const int pins[3] = {2, 3, 5};
-    const bool INVERT = false;
-    bool send = false;
-    bool enable = false;
-    bool last_enable = false;
-    CmdMessenger *cmdMsg;
-    byte logCmd;
-    unsigned long period = 100;
-    byte stability_count[3];
-    byte emo_count[3];
-    double input[3];
-    double output[3];
-    double (*target)[3];
-};
+const double wd_min = 0.0;
+const double wd_max = 229.5;
+const int wd_pins[3] = {2, 3, 5};
+const bool wd_invert = false;
+const double ki[3] = {0.48, 0.375, 0.375};
+const double kp[3] = {1.0, 0.75, 0.75};
+const double kd[3] = {0.04, 0.04, 0.04};
+const unsigned long wd_sample_time = 100;
+
+extern double stability_threshold;
+extern byte stability_count_threshold;
+extern byte emo_count_threshold;
+extern PID pids[3];
+
+void wdSetup();
+void wdLoop();
+bool  wdStable();
+void wdResetStable();
+void wdStart();
+void wdStop();
+bool wdEnabled();
+
+void sendPIDLog();
+void setDrive();
+void getDrive();
+void getPIDCoeff();
+void setEMOCountThreshold();
+void getEMOCountThreshold();
+void setStabilityCountThreshold();
+void getStabilityCountThreshold();
+void setStabilityThreshold();
+void getStabilityThreshold();
+void getTimes();
 
 #endif

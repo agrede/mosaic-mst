@@ -1,10 +1,14 @@
-#ifndef SPOTPOSITION_H
-#define SPOTPOSITION_H
+#ifndef SPOTPOSITION_HPP
+#define SPOTPOSITION_HPP
 
 #include "Arduino.h"
+#include "coms.hpp"
 #include "Sun_position_algorithms.h"
+#include <RTClib.h>;
 
 extern sunpos sun_pos;
+extern RTC_DS1307 rtc;
+extern DateTime now;
 
 const double rad = 0.017453292519943295;
 
@@ -21,10 +25,17 @@ extern double sin_heading, sin_tilt, sin_azimuth, sin_zenith;
 extern double cos_heading, cos_tilt, cos_azimuth, cos_zenith;
 extern bool feed_forward;
 
-void calculateSpot();
-void initializeSpot(double heading, double tilt, double latitude,
-                    double longitude, int year, int month, int day, double hour);
-void updateSpotPrediction(int year, int month, int day, double hour);
-void updatePanel(double heading, double tilt);
+void spotSetup();
+void spotLoop();
+void spotUpdateOrientation();
+
+void setFeedForward();
+void getFeedForward();
+void getGlobalPosition();
+void setGlobalPosition();
+void getPanelOrientation();
+void setPanelOrientation();
+void getRTC();
+void setRTC();
 
 #endif
