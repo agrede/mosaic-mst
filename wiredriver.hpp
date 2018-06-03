@@ -11,9 +11,9 @@ const double wd_min = 0.0;
 const double wd_max = 229.5;
 const int wd_pins[3] = {2, 3, 5};
 const bool wd_invert = false;
-const double ki[3] = {0.48, 0.375, 0.375};
-const double kp[3] = {1.0, 0.75, 0.75};
-const double kd[3] = {0.04, 0.04, 0.04};
+const double ki[3] = {0.1875, 0.24, 0.1875};
+const double kp[3] = {0.375, 0.5, 0.375};
+const double kd[3] = {0.02, 0.02, 0.02};
 const unsigned long wd_sample_time = 100;
 
 extern double stability_threshold;

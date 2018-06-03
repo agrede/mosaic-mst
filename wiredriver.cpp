@@ -18,11 +18,12 @@ PID pids[3] = {
 };
 
 void wdSetup(){
+    delay(10);
     unsigned long ct = millis();
     if (ct < wd_sample_time) {
         delay(wd_sample_time-ct);
     }
-    ct = millis;
+    ct = millis();
     wd_last_time = ct-wd_sample_time;
     for (int i=0;i<3;i++) {
         pinMode(wd_pins[i], OUTPUT);
@@ -97,7 +98,7 @@ void wdStart() {
     wd_enabled = true;
 }
 void wdStop() {
-    for (int i=3; i<3; i++) {
+    for (int i=0; i<3; i++) {
         if (wd_invert) {
             analogWrite(wd_pins[i], 255);
         } else {

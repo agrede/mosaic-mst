@@ -32,7 +32,7 @@ void encoderSetup() {
     SPI.endTransaction();
     usrMsg.attach(kSetEncoder, setEncoder);
     usrMsg.attach(kGetEncoder, getEncoder);
-    usrMsg.attach(kSheetCenter, encoderClear);
+    usrMsg.attach(kSetEncoderCenter, setEncoderCenter);
     usrMsg.attach(kGetEncoderCounts, getEncoderCounts);
     usrMsg.attach(kGetEncoderStats, getEncoderStatus);
 }
@@ -73,12 +73,18 @@ bool encoderStop() {
     SPI.endTransaction();
     return !encoder_enabled;
 }
-void encoderClear() {
+void encoderClear(int index) {
     SPI.beginTransaction(SPISET);
-    for (int i=0; i<3; i++) {
-        digitalWrite(encoder_select[i], LOW);
+    if (index < 0){
+        for (int i=0; i<3; i++) {
+            digitalWrite(encoder_select[i], LOW);
+            SPI.transfer(0x20); // Clear Counter
+            digitalWrite(encoder_select[i], HIGH);
+        }
+    } else {
+        digitalWrite(encoder_select[index], LOW);
         SPI.transfer(0x20); // Clear Counter
-        digitalWrite(encoder_select[i], HIGH);
+        digitalWrite(encoder_select[index], HIGH);
     }
     SPI.endTransaction();
 }
@@ -141,4 +147,10 @@ void getEncoderStatus() {
         usrMsg.sendCmdBinArg<byte>(encoder_stats[i]);
     }
     usrMsg.sendCmdEnd();
+}
+void setEncoderCenter() {
+    int index = usrMsg.readBinArg<int>();
+    if (index > -2 && index < 3) {
+        encoderClear(index);
+    }
 }

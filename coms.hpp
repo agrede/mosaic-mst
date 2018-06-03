@@ -14,7 +14,7 @@ enum {
     kGetLogging,
     kSetErrorCell,
     kGetErrorCell,
-    kSheetCenter,
+    kSetEncoderCenter,
     kSetTarget,
     kGetTarget,
     kSetErrorScale,

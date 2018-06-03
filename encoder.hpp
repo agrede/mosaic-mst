@@ -16,7 +16,7 @@ const SPISettings SPISET = SPISettings(5000000, MSBFIRST, SPI_MODE0);
 
 bool encoderStart();
 bool encoderStop();
-void encoderClear();
+void encoderClear(int index=-1);
 void encoderRead();
 void encoderStatus();
 
@@ -26,5 +26,6 @@ void getEncoder();
 void setEncoder();
 void getEncoderCounts();
 void getEncoderStatus();
+void setEncoderCenter();
 
 #endif
