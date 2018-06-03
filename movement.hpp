@@ -4,7 +4,7 @@
 #include "Arduino.h"
 #include "coms.hpp"
 
-const double wire_resolution = 2292.06;   /* (count or step)/mm */
+const double wire_resolution = 2371.75;   /* (count or step)/mm */
 /* Frame pivot points in mm */
 const double x_frame[3] = { 50.930,  24.070, -90.000};
 const double y_frame[3] = { 90.000,  90.000,   0.930};
