@@ -37,6 +37,8 @@ enum {
     kGetEncoderStats,
     kGetPIDCoeff,
     kGetTimes,
+    kSetDemo,
+    kGetDemo,
 };
 enum {
     kRequestError,

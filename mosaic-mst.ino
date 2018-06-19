@@ -6,6 +6,7 @@
 #include "wiredriver.hpp"
 #include "spotposition.hpp"
 #include "errorcells.hpp"
+#include "demo.hpp"
 
 
 void setup() {
@@ -17,13 +18,19 @@ void setup() {
     spotSetup();
     errorSetup();
     sendPIDLog();
+    demoSetup();
 }
 
 void loop() {
     comsLoop();
     if (wdEnabled()) {
+        if (pos_updated) {
+            wdResetStable();
+            pos_updated = false;
+        }
         if (wdStable()) {
             errorLoop();
+            demoLoop();
         }
         wdLoop();
     }
