@@ -39,6 +39,11 @@ enum {
     kGetTimes,
     kSetDemo,
     kGetDemo,
+    kGetSMEnable,
+    kSetSMEnable,
+    kRecieveSMLogging,
+    kGetSMLogEnable,
+    kSetSMLogEnable,
 };
 enum {
     kRequestError,

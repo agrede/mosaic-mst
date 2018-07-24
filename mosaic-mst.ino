@@ -1,9 +1,9 @@
 #include <SPI.h>
-#include "PID_v1.h"
+// #include "PID_v1.h"
 #include "coms.hpp"
 #include "encoder.hpp"
 #include "movement.hpp"
-#include "wiredriver.hpp"
+#include "motor.hpp"
 #include "spotposition.hpp"
 #include "errorcells.hpp"
 #include "demo.hpp"
@@ -14,25 +14,29 @@ void setup() {
     comsSetup();
     encoderSetup();
     movementSetup();
-    wdSetup();
+    // wdSetup();
+    smSetup();
     spotSetup();
     errorSetup();
-    sendPIDLog();
+    // sendPIDLog();
     demoSetup();
 }
 
 void loop() {
     comsLoop();
-    if (wdEnabled()) {
+    // if (wdEnabled()) {
+    if (sm_enabled) {
         if (pos_updated) {
-            wdResetStable();
+            // wdResetStable();
+            sm_stable = false;
             pos_updated = false;
         }
-        if (wdStable()) {
+        if (sm_stable) {
             errorLoop();
             demoLoop();
         }
-        wdLoop();
+        //wdLoop();
+        smLoop();
     }
     delayMicroseconds(100); // Ensure new command
 }
