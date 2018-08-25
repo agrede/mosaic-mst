@@ -1,7 +1,7 @@
 #include <SPI.h>
 // #include "PID_v1.h"
 #include "coms.hpp"
-#include "encoder.hpp"
+//#include "encoder.hpp"
 #include "movement.hpp"
 #include "motor.hpp"
 #include "spotposition.hpp"
@@ -12,12 +12,12 @@
 void setup() {
     SPI.begin();
     comsSetup();
-    encoderSetup();
+    // encoderSetup();
     movementSetup();
     // wdSetup();
     smSetup();
     spotSetup();
-    errorSetup();
+    // errorSetup();
     // sendPIDLog();
     demoSetup();
 }
@@ -32,10 +32,10 @@ void loop() {
             pos_updated = false;
         }
         if (sm_stable) {
-            errorLoop();
+            // errorLoop();
             demoLoop();
         }
-        //wdLoop();
+        // wdLoop();
         smLoop();
     }
     delayMicroseconds(100); // Ensure new command

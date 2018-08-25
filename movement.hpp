@@ -4,12 +4,12 @@
 #include "Arduino.h"
 #include "coms.hpp"
 
-const double wire_resolution = 2371.75;   /* (count or step)/mm */
+const double wire_resolution = 740.74074;   /* (count or step)/mm */
 /* Frame pivot points in mm */
-const double x_frame[3] = { 50.930,  24.070, -90.000};
-const double y_frame[3] = { 90.000,  90.000,   0.930};
-const double x_sheet[3] = { 69.685, -24.020, -69.685};
-const double y_sheet[3] = { 470.000,  70.000,  70.000};
+const double x_frame[3] = { 50.000,  25.000, -90.000};
+const double y_frame[3] = { 90.000,  90.000,   0.000};
+const double x_sheet[3] = { 70.000, -25.000, -70.000};
+const double y_sheet[3] = { 70.000,  70.000,  70.000};
 const double pos_limits[3] = {7.0, 7.0, 0.08726646259971647};
 
 extern double pos_vector[3];

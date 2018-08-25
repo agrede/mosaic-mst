@@ -27,6 +27,9 @@ void smSetup() {
     usrMsg.attach(kSetSMEnable, setSMEnable);
     usrMsg.attach(kGetSMLogEnable, getSMLogEnable);
     usrMsg.attach(kSetSMLogEnable, setSMLogEnable);
+    usrMsg.attach(kStepSM, stepSM);
+    usrMsg.attach(kSetSMPosition, setSMPositon);
+    usrMsg.attach(kGetSMRemSteps, getSMRemSteps);
 }
 
 void smLoop() {
@@ -42,38 +45,32 @@ void smRemSteps() {
     sm_minstep = 0;
     for (int i=0; i<3; i++) {
         sm_remsteps[i] = int(long(L_target[i]) - sm_position[i]);
-        if (sm_minstep == 0 || abs(sm_remsteps[i]) < sm_minstep) {
+        if (sm_minstep == 0 || (abs(sm_remsteps[i]) < sm_minstep && abs(sm_remsteps[i]) > 0)) {
             sm_minstep = abs(sm_remsteps[i]);
         }
     }
-    sm_stable = sm_minstep > 0;
+    sm_stable = sm_minstep < 1;
 }
 
 void smTakeSteps() {
     for (int i=0; i<3; i++) {
-        int steps = sm_dir[i]*sm_remsteps[i]/sm_minstep;
-        int dir = steps < 0 ? BACKWARD : FORWARD;
+        int steps = sm_remsteps[i]/sm_minstep;
+        int dir = sm_dir[i]*steps < 0 ? BACKWARD : FORWARD;
         sm_motors[i]->step(abs(steps), dir, sm_steptype);
         sm_position[i] += steps;
+    }
+    // for (int i=0; i<3; i++) {
+    //     sm_motors[i]->release();
+    // }
+    if (sm_log) {
+        sendSMLog();
     }
 }
 
 void getSMEnable() { usrMsg.sendBinCmd<bool>(kGetSMEnable, sm_enabled); }
-void setSMEnable() {
-    if (usrMsg.readBinArg<bool>()) {
-        sm_enabled = true;
-    } else {
-        sm_enabled = false;
-    }
-}
-void getSMLogEnable() { usrMsg.sendBinCmd<bool>(kGetSMLogEnable, sm_enabled); }
-void setSMLogEnable() {
-    if (usrMsg.readBinArg<bool>()) {
-        sm_log = true;
-    } else {
-        sm_log = false;
-    }
-}
+void setSMEnable() { sm_enabled = usrMsg.readBinArg<bool>(); }
+void getSMLogEnable() { usrMsg.sendBinCmd<bool>(kGetSMLogEnable, sm_log); }
+void setSMLogEnable() { sm_log = usrMsg.readBinArg<bool>(); }
 
 void sendSMLog() {
     usrMsg.sendCmdStart(kRecieveSMLogging);
@@ -84,5 +81,26 @@ void sendSMLog() {
     }
     usrMsg.sendCmdBinArg<int>(sm_minstep);
     usrMsg.sendCmdBinArg<bool>(sm_stable);
+    usrMsg.sendCmdEnd();
+}
+
+void stepSM() {
+    int i = usrMsg.readBinArg<int>();
+    int steps = usrMsg.readBinArg<int>();
+    int dir = sm_dir[i]*steps < 0 ? BACKWARD : FORWARD;
+    sm_motors[i]->step(abs(steps), dir, sm_steptype);
+}
+
+void setSMPositon() {
+    for (int i=0; i<3; i++) {
+        sm_position[i] = usrMsg.readBinArg<long>();
+    }
+}
+
+void getSMRemSteps() {
+    usrMsg.sendCmdStart(kGetSMRemSteps);
+    for (int i=0; i<3; i++) {
+        usrMsg.sendCmdBinArg<int>(sm_remsteps[i]);
+    }
     usrMsg.sendCmdEnd();
 }

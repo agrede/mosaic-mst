@@ -8,7 +8,7 @@
 const byte AFMSBOT = 0x61;
 const byte AFMSTOP = 0x60;
 const char sm_steptype = DOUBLE;
-const int sm_dir[3] = {-1, 1, 1};
+const int sm_dir[3] = {1, -1, 1};
 
 extern bool sm_enabled;
 extern bool sm_stable;
@@ -25,5 +25,8 @@ void getSMEnable();
 void setSMEnable();
 void getSMLogEnable();
 void setSMLogEnable();
+void stepSM();
+void setSMPositon();
+void getSMRemSteps();
 
 #endif

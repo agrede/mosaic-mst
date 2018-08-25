@@ -44,6 +44,9 @@ enum {
     kRecieveSMLogging,
     kGetSMLogEnable,
     kSetSMLogEnable,
+    kStepSM,
+    kSetSMPosition,
+    kGetSMRemSteps,
 };
 enum {
     kRequestError,

@@ -5,7 +5,7 @@
 #include "coms.hpp"
 #include "movement.hpp"
 
-const int demo_steps = 90;
+const int demo_steps = 30;
 const double demo_R = 7.0;
 extern bool demo_enabled;
 
